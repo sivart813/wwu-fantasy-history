@@ -483,7 +483,7 @@ elif page == 'Record book':
 
 
 elif page == 'Deep records':
-    st.subheader('ðŸ† Deep league records')
+    st.subheader('🏆 Deep league records')
     st.caption('All records respect the selected years, game type, and visible managers. Opponents may be inactive. Tied games are excluded from win/loss-specific records. Season rankings use the same selected game type.')
     if visible_d.empty:
         st.info('No matching results.')
@@ -575,7 +575,7 @@ elif page == 'Deep records':
             st.caption('Streaks use selected game type and seasons; playoff/consolation inclusion changes streak definitions.')
 
 elif page == 'Rivalry lab':
-    st.subheader('âš”ï¸ Rivalry lab')
+    st.subheader('⚔️ Rivalry lab')
     st.caption('Head-to-head streaks and rivalry milestones; results use selected seasons and game type. Only visible managers can be selected.')
     if len(visible_names) < 2:
         st.info('At least two managers must be visible.')
