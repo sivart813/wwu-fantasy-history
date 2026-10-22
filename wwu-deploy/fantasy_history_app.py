@@ -1,4 +1,4 @@
-"""Local Yahoo fantasy league history dashboard. Run: streamlit run fantasy_history_app.py"""
+﻿"""Local Yahoo fantasy league history dashboard. Run: streamlit run fantasy_history_app.py"""
 from pathlib import Path
 import csv
 import json
@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parent
-st.set_page_config(page_title='41st St Fellas', page_icon='🏈', layout='wide', initial_sidebar_state='expanded')
+st.set_page_config(page_title='41st St Fellas', page_icon='ðŸˆ', layout='wide', initial_sidebar_state='expanded')
 
 @st.cache_data(show_spinner=False)
 def load_data(root_str):
@@ -32,7 +32,7 @@ def load_data(root_str):
     lookups = mapping.set_index(['season','team_id'])
     games = []
     for file in sorted((root/'raw_history').glob('*/*_games.csv')):
-        if not 2014 <= int(file.parent.name) <= 2025:
+        if not 2014 <= int(file.parent.name) <= 2026:
             continue
         # Only read season aggregates, not week_01_games.csv etc.
         if file.name != f'{file.parent.name}_games.csv':
@@ -135,12 +135,12 @@ def summarize(rows, by):
     s['Diff'] = (s.PF-s.PA).round(2)
     return s
 
-st.title('🏈 41st St Fellas')
-st.caption('Local, read-only dashboard • Historical and in-progress Yahoo fantasy football results')
+st.title('ðŸˆ 41st St Fellas')
+st.caption('Local, read-only dashboard â€¢ Historical and in-progress Yahoo fantasy football results')
 with st.sidebar:
     st.header('Explore')
     page = st.radio('Page', ['Overview','All-time standings','Regular-season records','Head-to-head matrix','Manager profile','Season explorer','Game finder','Championships','Record book','Deep records','Rivalry lab'])
-    if st.button('↻ Reload CSV files'):
+    if st.button('â†» Reload CSV files'):
         st.cache_data.clear()
         st.rerun()
 try:
@@ -160,7 +160,7 @@ with st.sidebar:
     config_file = ROOT / 'league_config.json'
     league_config = json.loads(config_file.read_text(encoding='utf-8')) if config_file.exists() else {}
     inactive_names = league_config.get('inactive_managers', ['Dollar', 'Jes', 'Ty'])
-    show_inactive = st.checkbox('Include inactive managers (' + ', '.join(inactive_names) + ')', value=False, help='Hides these managers from leaderboards and selectors. Their games against active managers still count toward active managers’ records.')
+    show_inactive = st.checkbox('Include inactive managers (' + ', '.join(inactive_names) + ')', value=False, help='Hides these managers from leaderboards and selectors. Their games against active managers still count toward active managersâ€™ records.')
 
 subset = games[games.season.between(*years)].copy()
 if phase_choice != 'All games':
@@ -187,7 +187,7 @@ if page == 'Overview':
     c1.metric('Seasons selected', len(set(subset.season)))
     c2.metric('Managers displayed', len(visible_names))
     c3.metric('Matchups involving displayed managers', len(active_games))
-    c4.metric('Average team score', f'{visible_d.points_for.mean():.1f}' if not visible_d.empty else '—')
+    c4.metric('Average team score', f'{visible_d.points_for.mean():.1f}' if not visible_d.empty else 'â€”')
     c5.metric('Verified championships', len(champs[champs.season.between(*years)]) if not champs.empty else 0)
 
     if not career.empty:
@@ -228,7 +228,6 @@ if page == 'Overview':
     if not visible_d.empty:
         best = visible_d.sort_values('points_for',ascending=False).head(10)
         show_table(best[['season','week','manager','opponent','points_for','points_against','phase']].rename(columns={'points_for':'Score','points_against':'Opponent score'}),'highest_scores.csv',300)
-    
 
 elif page == 'All-time standings':
     st.subheader('Career standings')
@@ -267,11 +266,11 @@ elif page == 'All-time standings':
                 st.caption('Titles and runner-up finishes are verified season-level achievements, shown when postseason is selected.')
             summary = summary.sort_values(['Wins', 'Win %', 'PF'], ascending=False).reset_index(drop=True)
             summary.insert(0, 'Rank', range(1, len(summary) + 1))
-            st.caption(f"Showing {', '.join(standings_phases)} • {years[0]}–{years[1]} • {len(standings_games):,} matchups")
+            st.caption(f"Showing {', '.join(standings_phases)} â€¢ {years[0]}â€“{years[1]} â€¢ {len(standings_games):,} matchups")
             show_table(summary, 'all_time_standings_filtered.csv')
 
 elif page == 'Regular-season records':
-    st.subheader('🏅 Best regular seasons in league history')
+    st.subheader('ðŸ… Best regular seasons in league history')
     st.caption('Ranks individual manager-seasons by regular-season record, using points scored as the tiebreaker. Postseason and consolation games are excluded. The 13-game and 14-game eras can be compared separately.')
     regular = games[games.season.between(*years) & games.phase.eq('Regular season')].copy()
     regular_rows = directional(regular)
@@ -318,7 +317,7 @@ elif page == 'Regular-season records':
         one = seasons_table[seasons_table.season == selected_year].copy()
         one = one.sort_values(['Win %', 'PF', 'Diff'], ascending=[False, False, False]).reset_index(drop=True)
         one.insert(0, 'Rank', range(1, len(one) + 1))
-        st.caption(f'{selected_year}: {14 if selected_year >= 2021 else 13} scheduled regular-season weeks • standings exclude playoff and consolation scores' + (' • SEASON IN PROGRESS' if not one.Complete.all() else ''))
+        st.caption(f'{selected_year}: {14 if selected_year >= 2021 else 13} scheduled regular-season weeks â€¢ standings exclude playoff and consolation scores' + (' â€¢ SEASON IN PROGRESS' if not one.Complete.all() else ''))
         show_table(one[['Rank','manager','Wins','Losses','Ties','Games','Win %','PF','PA','Diff','PPG']].rename(columns={'manager':'Manager'}), f'regular_season_{selected_year}_standings.csv', 420)
 
 elif page == 'Head-to-head matrix':
@@ -333,8 +332,8 @@ elif page == 'Head-to-head matrix':
         matrix = pd.DataFrame(index=names,columns=names)
         for name in names:
             for opp in names:
-                matrix.loc[name,opp] = ('—' if name == opp else
-                    (f'{record[(name,opp)]}  ({streaks[(name,opp)]})' if (name,opp) in record else '—'))
+                matrix.loc[name,opp] = ('â€”' if name == opp else
+                    (f'{record[(name,opp)]}  ({streaks[(name,opp)]})' if (name,opp) in record else 'â€”'))
         def shade(val, name, opp):
             if name == opp or (name,opp) not in diff:
                 return 'background-color: #64748b20; color: inherit'
@@ -348,7 +347,7 @@ elif page == 'Head-to-head matrix':
         first = c1.selectbox('Manager',names,index=0)
         second = c2.selectbox('Opponent',[n for n in names if n != first])
         detail = d[(d.manager == first)&(d.opponent == second)].sort_values(['season','week'],ascending=False)
-        st.write(f'**{first} vs {second}:** {record.get((first,second),"No games")} · **Current streak:** {streaks.get((first,second),"—")}')
+        st.write(f'**{first} vs {second}:** {record.get((first,second),"No games")} Â· **Current streak:** {streaks.get((first,second),"â€”")}')
         show_table(detail[['season','week','phase','team','opponent_team','points_for','points_against','margin','W','L','T']], 'matchup_detail.csv',350)
 
 elif page == 'Manager profile':
@@ -368,7 +367,7 @@ elif page == 'Manager profile':
         st.subheader('Record against opponents')
         vs = summarize(person,['opponent']).sort_values('Wins',ascending=False)
         current_streaks = matchup_streaks(d)
-        vs['Current streak'] = vs.opponent.map(lambda opponent: current_streaks.get((manager, opponent), '—'))
+        vs['Current streak'] = vs.opponent.map(lambda opponent: current_streaks.get((manager, opponent), 'â€”'))
         show_table(vs,'manager_opponents.csv',340)
     st.subheader('Teams managed')
     teams = mapping[(mapping.manager_name == manager)&mapping.season.between(*years)][['season','team_name']].sort_values('season')
@@ -390,7 +389,7 @@ elif page == 'Season explorer':
         winner = champs[champs.season == season]
         if not winner.empty:
             r = winner.iloc[0]
-            st.success(f'Champion: {r.champion_manager} ({r.champion_team_name}) defeated {r.runner_up_manager} ({r.runner_up_team_name}), {r.champion_score}–{r.runner_up_score}')
+            st.success(f'Champion: {r.champion_manager} ({r.champion_team_name}) defeated {r.runner_up_manager} ({r.runner_up_team_name}), {r.champion_score}â€“{r.runner_up_score}')
 
 elif page == 'Game finder':
     st.subheader('Search historical games')
@@ -419,7 +418,7 @@ elif page == 'Championships':
 
 elif page == 'Record book':
     st.subheader('League record book')
-    st.caption('Top 50 per category • Records respect the selected seasons, game type, and visible managers. Games against hidden managers remain eligible.')
+    st.caption('Top 50 per category â€¢ Records respect the selected seasons, game type, and visible managers. Games against hidden managers remain eligible.')
     records = visible_d.copy()
     if records.empty:
         st.info('No games match these filters.')
@@ -484,7 +483,7 @@ elif page == 'Record book':
 
 
 elif page == 'Deep records':
-    st.subheader('🏆 Deep league records')
+    st.subheader('ðŸ† Deep league records')
     st.caption('All records respect the selected years, game type, and visible managers. Opponents may be inactive. Tied games are excluded from win/loss-specific records. Season rankings use the same selected game type.')
     if visible_d.empty:
         st.info('No matching results.')
@@ -576,7 +575,7 @@ elif page == 'Deep records':
             st.caption('Streaks use selected game type and seasons; playoff/consolation inclusion changes streak definitions.')
 
 elif page == 'Rivalry lab':
-    st.subheader('⚔️ Rivalry lab')
+    st.subheader('âš”ï¸ Rivalry lab')
     st.caption('Head-to-head streaks and rivalry milestones; results use selected seasons and game type. Only visible managers can be selected.')
     if len(visible_names) < 2:
         st.info('At least two managers must be visible.')
@@ -591,7 +590,7 @@ elif page == 'Rivalry lab':
             h['Outcome'] = h.apply(lambda r: 'W' if r.W else ('L' if r.L else 'T'),axis=1)
             wins, losses, ties = int(h['W'].sum()), int(h['L'].sum()), int(h['T'].sum())
             st.metric(f'{a} vs {b}',f'{wins}-{losses}-{ties}',f'{len(h)} meetings',delta_color='off')
-            streak = matchup_streaks(h).get((a,b),'—')
+            streak = matchup_streaks(h).get((a,b),'â€”')
             best = {'W':(0,None,None),'L':(0,None,None)}
             last = None; count = 0; start = None
             for r in h.itertuples():
@@ -606,7 +605,7 @@ elif page == 'Rivalry lab':
             c2.metric(f'{a} longest run',f'W{best["W"][0]}')
             c3.metric(f'{b} longest run',f'W{best["L"][0]}')
             c4.metric('Average point margin',f'{h.margin.mean():+.2f}')
-            st.caption(f'{a} best run: {best["W"][1] or "—"} → {best["W"][2] or "—"} · {b} best run: {best["L"][1] or "—"} → {best["L"][2] or "—"}')
+            st.caption(f'{a} best run: {best["W"][1] or "â€”"} â†’ {best["W"][2] or "â€”"} Â· {b} best run: {best["L"][1] or "â€”"} â†’ {best["L"][2] or "â€”"}')
             h['A cumulative wins'] = h.W.cumsum()
             h['B cumulative wins'] = h.L.cumsum()
             h['Meeting'] = range(1,len(h)+1)
@@ -631,3 +630,4 @@ elif page == 'Rivalry lab':
                     show_table(result[['season', 'week', 'phase', 'points_for', 'points_against', 'margin']], None, 90)
             st.subheader('Every meeting (newest first)')
             show_table(h.sort_values(['season','week'],ascending=False)[['season','week','phase','team','opponent_team','points_for','points_against','margin','Outcome']],'rivalry_history.csv',460)
+
