@@ -228,7 +228,7 @@ if page == 'Overview':
     if not visible_d.empty:
         best = visible_d.sort_values('points_for',ascending=False).head(10)
         show_table(best[['season','week','manager','opponent','points_for','points_against','phase']].rename(columns={'points_for':'Score','points_against':'Opponent score'}),'highest_scores.csv',300)
-    st.caption(f'Data on disk: {ROOT}')
+    
 
 elif page == 'All-time standings':
     st.subheader('Career standings')
