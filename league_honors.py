@@ -97,13 +97,33 @@ def answer_honors(question, honors, regular_rows, visible_names):
                                  'Playoff runner-up':bool(r[-2]),'League champion':bool(r[-1])})
         tab=pd.DataFrame(outcomes)
         if tab.empty: return result('No matching starts',f'No completed manager-season started {w}-{l}.',tab)
-        if 'runner-up' in q or 'runner up' in q: col='Playoff runner-up'
-        elif re.search(r'playoff|postseason',q): col='Made playoffs'
-        elif 'regular' in q: col='Regular-season champion'
-        else: col='League champion'
-        matched=tab[tab[col]]
-        label=col.lower()
-        return result(f'{len(matched)} qualifying manager-season(s)',f'{len(matched)} started {w}-{l}{" or worse" if "or worse" in q else ""}; {len(matched)} achieved {label}.',matched if len(matched) else tab)
+        missed = bool(re.search(
+            r'\b(?:missed|miss|missing|failed to make|did not make|'
+            r'didn.t make|never made|failed to reach|did not reach|'
+            r'didn.t reach|failed to qualify for)\s+(?:the\s+)?playoffs\b',
+            q
+        ))
+        if missed:
+            col = 'Made playoffs'
+            matched = tab[~tab[col]]
+            label = 'missed the playoffs'
+        else:
+            if 'runner-up' in q or 'runner up' in q:
+                col = 'Playoff runner-up'
+            elif re.search(r'playoff|postseason', q):
+                col = 'Made playoffs'
+            elif 'regular' in q:
+                col = 'Regular-season champion'
+            else:
+                col = 'League champion'
+            matched = tab[tab[col]]
+            label = col.lower()
+        return result(
+            f'{len(matched)} qualifying manager-season(s)',
+            f'{len(tab)} started {w}-{l}{" or worse" if "or worse" in q else ""}; '
+            f'{len(matched)} achieved {label}.',
+            matched
+        )
     if re.search(r'runner.up|runner up|championship (?:loss|finalist)',q): metric='Playoff runner-ups'
     elif re.search(r'regular.season (?:champ|title|winner)',q): metric='Regular-season titles'
     elif re.search(r'playoff|postseason',q): metric='Playoff appearances'
