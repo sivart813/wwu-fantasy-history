@@ -1,0 +1,14 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+.streamlit/secrets.toml
+yahoo_browser_profile/
+*_browser_profile/
+archive/
+archives/
+*.zip
+*.html
+*_debug.html
