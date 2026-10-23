@@ -259,6 +259,11 @@ EXAMPLES = list(dict.fromkeys(EXAMPLES + EXAMPLES_ADVANCED + [
 
 def answer_question(question, rows, champs, manager_names, min_games=5, honors=None, regular_rows=None):
     if honors is not None and regular_rows is not None:
+        import re
+        if re.search(r'\b(?:starting|started|start|after going|after an?)\s+\d{1,2}\s*-\s*\d{1,2}\b', question.casefold()):
+            honors_answer = answer_honors(question, honors, regular_rows, manager_names)
+            if honors_answer is not None:
+                return honors_answer
         compound = answer_compound(question, regular_rows, honors, manager_names)
         if compound is not None:
             return compound
