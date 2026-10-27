@@ -276,6 +276,24 @@ def render_league_awards(games, mapping, champs, visible_names, show_table):
             show_table(shown,'current_season_award_stats.csv',480)
     else:
         awards, stats, seasons=compute_awards(games,mapping,champs,visible_names)
+        season_options = ['All-Time'] + [str(y) for y in sorted(seasons, reverse=True)]
+        selected_season = st.selectbox(
+            'Season',
+            season_options,
+            key='league_awards_season_filter'
+        )
+        if selected_season != 'All-Time':
+            year = int(selected_season)
+            season_games = games[games.season.eq(year)].copy()
+            season_mapping = mapping[mapping.season.eq(year)].copy()
+            season_champs = (
+                champs[champs.season.eq(year)].copy()
+                if champs is not None and not champs.empty
+                else champs
+            )
+            awards, stats, seasons = compute_awards(
+                season_games, season_mapping, season_champs, visible_names
+            )
         st.caption('Verified championships and completed regular seasons only. In-progress seasons are excluded.')
         if awards.empty:
             st.info('No complete regular seasons available to calculate awards.')
