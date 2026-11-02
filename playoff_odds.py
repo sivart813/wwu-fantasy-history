@@ -454,6 +454,7 @@ def render_playoff_odds(games, mapping, season):
             column: "{:.1%}"
             for column in percentage_columns
         }),
+        height=460,
         hide_index=True,
         column_config={
             "Manager": st.column_config.TextColumn(
@@ -495,6 +496,7 @@ def render_playoff_odds(games, mapping, season):
         }).set_properties(**{"text-align": "center"}).set_table_styles([
             {"selector": "th", "props": [("text-align", "center")]}
         ]),
+        height=460,
         hide_index=True,
         use_container_width=True,
     )
