@@ -455,6 +455,12 @@ def render_playoff_odds(games, mapping, season):
             for column in percentage_columns
         }),
         hide_index=True,
+        column_config={
+            "Manager": st.column_config.TextColumn(
+                "Manager",
+                pinned=True,
+            ),
+        },
         use_container_width=True,
     )
 
