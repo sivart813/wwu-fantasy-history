@@ -406,6 +406,7 @@ def render_power_rankings(
 
     st.dataframe(
         display,
+        height=460,
         width="stretch",
         hide_index=True,
         column_config={
@@ -442,6 +443,7 @@ def render_power_rankings(
 
     st.dataframe(
         schedule_display,
+        height=460,
         width="stretch",
         hide_index=True,
     )
@@ -470,6 +472,7 @@ def render_power_rankings(
 
     st.dataframe(
         breakdown,
+        height=460,
         width="stretch",
         hide_index=True,
     )
